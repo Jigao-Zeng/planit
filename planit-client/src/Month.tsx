@@ -1,5 +1,7 @@
 import { buildCalendar } from "./helper";
 
+import { useNavigate } from "react-router-dom";
+
 interface MonthCalendarProps {
   month: number; // 0 = Jan
   year: number;
@@ -25,6 +27,8 @@ export default function MonthCalendar({ month, year }: MonthCalendarProps) {
   const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const cells = buildCalendar(year, month);
 
+  const navigate = useNavigate();
+
   return (
     <div className="w-full max-w-xl border rounded p-4 shadow-sm">
       <h2 className="text-xl font-bold mb-2">{monthNames[month]}</h2>
@@ -44,6 +48,11 @@ export default function MonthCalendar({ month, year }: MonthCalendarProps) {
             className={`h-12 flex items-center justify-center border rounded ${
               day === null ? "bg-gray-100" : ""
             }`}
+            onClick={() => {
+              if (day !== null) {
+                navigate(`/todo/${year}/${month}/${day}`);
+              }
+            }}
           >
             {day}
           </div>
