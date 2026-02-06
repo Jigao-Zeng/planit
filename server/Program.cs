@@ -21,6 +21,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 );
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+var allowedOriginsCsv = builder.Configuration["AllowedOrigins"];
+if (allowedOrigins.Length == 0 && !string.IsNullOrWhiteSpace(allowedOriginsCsv))
+{
+    allowedOrigins = allowedOriginsCsv
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
 
 builder.Services.AddCors(options =>
 {
@@ -52,6 +58,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
 app.MapControllers();
