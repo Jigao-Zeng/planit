@@ -14,7 +14,6 @@ services:
   - type: web
     name: planit-web
     env: static
-    plan: free
     rootDir: planit-client
     buildCommand: npm ci && npm run build
     staticPublishPath: dist
