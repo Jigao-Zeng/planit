@@ -9,7 +9,7 @@ services:
       - key: ConnectionStrings__Default
         value: Data Source=/var/data/todo.db
       - key: AllowedOrigins__0
-        value: https://REPLACE_WITH_FRONTEND.onrender.com
+        value: https://planit-web-l2qi.onrender.com
 
   - type: web
     name: planit-web
@@ -20,4 +20,4 @@ services:
     autoDeploy: true
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://REPLACE_WITH_API.onrender.com
+        value: https://planit-api-fgze.onrender.com
