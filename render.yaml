@@ -10,10 +10,6 @@ services:
         value: Data Source=/var/data/todo.db
       - key: AllowedOrigins__0
         value: https://REPLACE_WITH_FRONTEND.onrender.com
-    disk:
-      name: planit-data
-      mountPath: /var/data
-      sizeGB: 1
 
   - type: web
     name: planit-web
