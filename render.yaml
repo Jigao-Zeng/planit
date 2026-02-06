@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: planit-api
+    env: docker
+    plan: free
+    rootDir: server
+    autoDeploy: true
+    envVars:
+      - key: ConnectionStrings__Default
+        value: Data Source=/var/data/todo.db
+      - key: AllowedOrigins__0
+        value: https://REPLACE_WITH_FRONTEND.onrender.com
+    disk:
+      name: planit-data
+      mountPath: /var/data
+      sizeGB: 1
+
+  - type: web
+    name: planit-web
+    env: static
+    plan: free
+    rootDir: planit-client
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    autoDeploy: true
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://REPLACE_WITH_API.onrender.com
