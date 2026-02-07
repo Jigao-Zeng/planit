@@ -33,7 +33,15 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        if (allowedOrigins.Length > 0)
+        var allowAnyOrigin = builder.Configuration.GetValue<bool>("AllowAnyOrigin");
+
+        if (allowAnyOrigin)
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyHeader()
+                  .AllowAnyMethod();
+        }
+        else if (allowedOrigins.Length > 0)
         {
             policy.WithOrigins(allowedOrigins)
                   .AllowAnyHeader()
@@ -71,6 +79,7 @@ app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCors("AllowFrontend");
 app.UseAuthorization();
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.MapControllers();
 app.Run();
 
