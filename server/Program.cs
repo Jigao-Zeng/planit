@@ -81,6 +81,14 @@ app.UseCors("AllowFrontend");
 app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.MapControllers();
+
+// Ensure database is created/migrated at startup (safe for SQLite).
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
 app.Run();
 
 // --------------------
