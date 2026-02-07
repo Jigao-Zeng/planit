@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchTodos, createTodo } from "./api/api";
+import { fetchTodos, createTodo, updateTodo, deleteTodo } from "./api/api";
 
 export default function TodoPage() {
   const { year, month, day } = useParams();
@@ -8,6 +8,8 @@ export default function TodoPage() {
 
   const [todos, setTodos] = useState<{ id: number; title: string }[]>([]);
   const [newTitle, setNewTitle] = useState(""); // for input
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingTitle, setEditingTitle] = useState("");
 
   const pad = (n: number) => n.toString().padStart(2, "0");
 
@@ -33,6 +35,26 @@ export default function TodoPage() {
     const todo = await createTodo(dateStr, newTitle);
     setTodos([...todos, todo]); // add new todo to state
     setNewTitle(""); // clear input
+  };
+
+  const startEdit = (id: number, title: string) => {
+    setEditingId(id);
+    setEditingTitle(title);
+  };
+
+  const handleSaveEdit = async () => {
+    if (editingId === null) return;
+    if (!editingTitle.trim()) return;
+
+    const updated = await updateTodo(editingId, editingTitle);
+    setTodos(todos.map((t) => (t.id === updated.id ? updated : t)));
+    setEditingId(null);
+    setEditingTitle("");
+  };
+
+  const handleDelete = async (id: number) => {
+    await deleteTodo(id);
+    setTodos(todos.filter((t) => t.id !== id));
   };
 
   return (
@@ -68,8 +90,51 @@ export default function TodoPage() {
       {/* Todos list */}
       <div className="mt-4 flex flex-col gap-2">
         {todos.map((t) => (
-          <div key={t.id} className="border p-2 rounded">
-            {t.title}
+          <div
+            key={t.id}
+            className="border p-2 rounded flex items-center gap-2"
+          >
+            {editingId === t.id ? (
+              <>
+                <input
+                  type="text"
+                  value={editingTitle}
+                  onChange={(e) => setEditingTitle(e.target.value)}
+                  className="flex-1 border rounded p-2"
+                />
+                <button
+                  onClick={handleSaveEdit}
+                  className="bg-green-600 text-white px-3 py-1 rounded"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingId(null);
+                    setEditingTitle("");
+                  }}
+                  className="bg-gray-200 text-gray-800 px-3 py-1 rounded"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                <span className="flex-1">{t.title}</span>
+                <button
+                  onClick={() => startEdit(t.id, t.title)}
+                  className="bg-blue-600 text-white px-3 py-1 rounded"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => handleDelete(t.id)}
+                  className="bg-red-600 text-white px-3 py-1 rounded"
+                >
+                  Delete
+                </button>
+              </>
+            )}
           </div>
         ))}
       </div>
